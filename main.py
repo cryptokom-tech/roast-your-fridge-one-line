@@ -14,15 +14,27 @@ LINE = (
 )
 
 
+def is_valid(line: str) -> bool:
+    """True when line passes the gate: one UTF-8 line, 1-200 chars."""
+    if not line.strip():
+        return False
+    if any(ord(char) < 32 or ord(char) == 127 for char in line):
+        return False
+    if not 1 <= len(line) <= 200:
+        return False
+    try:
+        line.encode("utf-8")
+    except UnicodeEncodeError:
+        return False
+    return True
+
+
 def main() -> int:
-    if not LINE.strip():
-        return 1
-    if "\n" in LINE or "\r" in LINE:
-        return 1
-    if not 1 <= len(LINE) <= 200:
+    if not is_valid(LINE):
         return 1
     os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8") as handle:
+    # newline="\n" keeps the written bytes identical on every run.
+    with open("/output/entry.txt", "w", encoding="utf-8", newline="\n") as handle:
         handle.write(LINE + "\n")
     return 0
 
